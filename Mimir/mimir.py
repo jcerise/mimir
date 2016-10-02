@@ -1,2 +1,2 @@
-def print_test_string():
-    print "This a test of the Mimir package!"
+def print_test_string(args):
+    print "Mimir was run with the {} command.".format(args[1])

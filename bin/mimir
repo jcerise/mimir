@@ -1,0 +1,6 @@
+#!/usr/bin/env python
+
+import Mimir
+import sys
+
+Mimir.print_test_string(sys.argv)
