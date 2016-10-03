@@ -7,5 +7,11 @@ setup(name='Mimir',
       author='Jeremy Cerise',
       author_email='jcerise06@gmail.com',
       packages=['Mimir'],
+      include_package_data=True,
       zip_safe=False,
-      scripts=['bin/mimir'])
+      install_requires=['Click',],
+      entry_points='''
+            [console_scripts]
+            mimir=Mimir.mimir:cli
+      ''',
+      )

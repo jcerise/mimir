@@ -1,1 +1,1 @@
-from .mimir import print_test_string
+from .mimir import cli
