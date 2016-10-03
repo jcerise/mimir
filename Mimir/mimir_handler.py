@@ -1,3 +1,4 @@
+import json
 import os
 
 import shutil
@@ -20,18 +21,32 @@ class MimirHandler():
 
     def _init(self):
         """
-        Initialize a new mimir, creating a .mimir directory and all appropriate files
+        Initialize a new mimir, creating a .mimir directory and an initial configuration file
         :return:
         """
         working_dir = os.getcwd()
         mimir_dir = working_dir + '/.mimir'
+        config_name = '.mimir_config'
+        config_location = mimir_dir + '/' + config_name
 
         print 'Initializing mimir in {}...'.format(working_dir)
         try:
             if not os.path.exists(mimir_dir):
+                # Attempt to make the .mimir directory in the current working directory
                 os.makedirs(mimir_dir)
+
+                # Setup the base configuration dictionary. This will be written to the config file as json. The user
+                # will have control over editing these settings.
+                config = {"editor":"", "tag_symbol": "@", "encrypt":False}
+
+                # If the above directory creation succeeded, attempt to create the base configuration file
+                # (.mimir/.mimir_config)
+                with open(config_location, 'w+') as f:
+                    json.dump(config, f)
+                print 'Successfully created a new mimir at {}'.format(mimir_dir)
             else:
                 print 'A mimir directory already exists at {}! Aborting...'.format(mimir_dir)
+                return
         except OSError as ex:
             print 'Something went wrong during initialization...'
 
@@ -43,7 +58,6 @@ class MimirHandler():
         working_dir = os.getcwd()
         mimir_dir = working_dir + '/.mimir'
 
-        print 'You are about to delete the mimir in {}'.format(working_dir)
         try:
             if os.path.exists(mimir_dir):
                 print 'Deleting mimir at {}'.format(mimir_dir)
