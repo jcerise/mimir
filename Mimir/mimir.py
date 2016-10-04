@@ -15,11 +15,14 @@ def cli(action=None):
     actions = Actions
     handler = MimirHandler()
     try:
-        if action == 'delete':
-            if click.confirm('Are you sure you wish to delete an mimirs found?'):
-                handler.handle(action)
+        if action in actions.__members__:
+            if action == 'delete':
+                if click.confirm('Are you sure you wish to delete any mimirs found?'):
+                    handler.handle(action)
             else:
                 handler.handle(action)
+        else:
+            raise KeyError('Action not found!')
     except KeyError as ex:
         print 'Invalid action supplied'
 
