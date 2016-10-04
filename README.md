@@ -5,7 +5,21 @@ provide quick, concise notes, that can be easily included in the project/directo
 
 ## Code Example
 
-Nothing to show yet...
+Mimir can be initialized within any directory. Each mimir instance keep track of its own notes.
+
+Initialize mimir within a directory:
+```bash
+mimir init
+```
+
+This will create a new directory, .mimir, and a config file, .mimir/.mimir-config
+
+Delete mimir from a directory:
+```bash
+mimir delete
+```
+
+This deletes the mimir present in the working directory. It will also delete any config files and all notes.
 
 ## Installation
 
@@ -13,7 +27,9 @@ Once working code exists, you will be able to install Mimir via pip
 
 ## Tests
 
-No tests yet...
+Mimir uses Pytest for testing.
+
+From the root project directory, simply run `pytest`
 
 ## License
 
