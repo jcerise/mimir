@@ -9,3 +9,6 @@
 
 # Pycharm files
 /.idea/
+
+# Cache files
+/.cache/
