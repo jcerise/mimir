@@ -21,6 +21,13 @@ mimir delete
 
 This deletes the mimir present in the working directory. It will also delete any config files and all notes.
 
+To create a new note, simply:
+```bash
+mimir This is my brand new note!
+```
+
+The note will be added to `.mimir/mimir_notes.txt`
+
 ## Installation
 
 Once working code exists, you will be able to install Mimir via pip

@@ -16,7 +16,6 @@ def cli(action=None):
     actions = Actions
     handler = MimirHandler()
 
-    # TODO: What about one word notes? Should we just fall through when an action isn't found?
     if len(action) == 1:
         action = action[0]
         try:
@@ -29,15 +28,32 @@ def cli(action=None):
             else:
                 raise KeyError('Action not defined!')
         except KeyError as ex:
-            print 'Invalid action supplied'
-
-            valid = ''
-            for action in actions:
-                valid += action.name + ' '
-
-            print 'Valid actions: {}'.format(valid)
-            print 'Run \'mimir --help\' for more information'
+            # Assume here that user wants a one word note, and record it
+            print 'single word found'
+            print action
+            handler.handle('new', note=action)
+    elif len(action) > 0:
+        # If multiple arguments were passed in, but no specific actions were called, assume no specific action,
+        # and create a note instead.
+        handler.handle('new', note=action)
     else:
-        # If multiple arguments were passed in, assume no specific action, and create a note instead.
-        handler.handle('new')
+        # If we made it here, then mimir is confused as to how to handle the users input. Alert them to this.
+        invalid_action()
+
+
+def invalid_action():
+    """
+    Let the user know that they have done something invalid that mimir does not know how to handle
+    :return:
+    """
+    actions = Actions
+
+    print 'Invalid action supplied'
+
+    valid = ''
+    for action in actions:
+        valid += action.name + ' '
+
+    print 'Valid actions: {}'.format(valid)
+    print 'Run \'mimir --help\' for more information'
 
