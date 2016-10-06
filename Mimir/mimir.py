@@ -12,9 +12,15 @@ class Actions(Enum):
 
 @click.command()
 @click.argument('action', nargs=-1)
-def cli(action=None):
+@click.option('-s', nargs=1, type=int, default=100)
+def cli(s, action=None):
     actions = Actions
     handler = MimirHandler()
+
+    # Check if the 'show' option was provided. If so, show that many notes, and return
+    if s is not None and s > 0:
+        handler.handle('show', num=s)
+        return
 
     if len(action) == 1:
         action = action[0]
@@ -29,8 +35,6 @@ def cli(action=None):
                 raise KeyError('Action not defined!')
         except KeyError as ex:
             # Assume here that user wants a one word note, and record it
-            print 'single word found'
-            print action
             handler.handle('new', note=action)
     elif len(action) > 0:
         # If multiple arguments were passed in, but no specific actions were called, assume no specific action,

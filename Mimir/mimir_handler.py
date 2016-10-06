@@ -80,7 +80,7 @@ class MimirHandler:
         :return:
         """
         # Check to ensure that all the requisite files/dirs exists before continuing
-        if os.path.exists(self.mimir_dir) and os.path.exists(self.notes_location) and os.path.exists(self.config_location):
+        if self.does_mimir_exist():
             note = kwargs['note']
 
             # If the note is a single word, it will be passed from Click as a string, if it was several words, it comes
@@ -94,12 +94,50 @@ class MimirHandler:
                 f.write('{:%Y-%m-%d %H:%M} :: {}'.format(current_time, note))
 
             print '[Entry added to mimir at {}]'.format(self.mimir_dir)
+
+    def _show(self, **kwargs):
+        """
+        Show the last n notes, where n is the value passed in from the -s flag
+        :return:
+        """
+        if self.does_mimir_exist():
+            with open(self.notes_location, 'r') as f:
+                index = 0
+                count = 0
+                returned_notes = []
+                for line in f:
+                    # Skip the first two lines of the file, they merely record when the mimir was created
+                    if index == 0 or index == 1:
+                        index += 1
+                        continue
+
+                    if line != '\n':
+                        returned_notes.append(line)
+                    else:
+                        count += 1
+                        if count >= kwargs['num']:
+                            break
+                    index += 1
+
+                for note in returned_notes:
+                    print str(note)
+
+
+    def does_mimir_exist(self):
+        """
+        Check for the existance of a mimir, mimir config, and notes file
+        :return:
+        """
+        if os.path.exists(self.mimir_dir) and os.path.exists(self.notes_location) and os.path.exists(self.config_location):
+            return True
         else:
             print 'No mimir found, or files missing...are you sure you are in the correct dir? ({})'\
                 .format(self.working_dir)
+            return False
 
     @staticmethod
     def handler_not_found():
         print 'Handler not found!'
+
 
 
