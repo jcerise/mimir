@@ -4,6 +4,9 @@ import os
 import shutil
 
 import datetime
+import subprocess
+
+from subprocess import call
 
 
 class MimirHandler:
@@ -50,7 +53,7 @@ class MimirHandler:
                 # Finally, create the actual notes file
                 with open(self.notes_location, 'w+') as f:
                     current_time = datetime.datetime.now()
-                    f.write('{:%Y-%m-%d %H:%M} Mimir initialized.'.format(current_time))
+                    f.write('{:%Y-%m-%d %H:%M} :: Mimir initialized.'.format(current_time))
 
                 print 'Successfully created a new mimir at {}'.format(self.mimir_dir)
             else:
@@ -122,6 +125,36 @@ class MimirHandler:
                 for note in returned_notes:
                     print str(note)
 
+    def _edit(self, **kwargs):
+        if self.does_mimir_exist():
+            with open(self.config_location) as config:
+                config_options = json.load(config)
+                if config_options['editor'] != '':
+                    print 'Opening {} in {}'.format(self.notes_location, config_options['editor'])
+                    initial_notes_count = self.count_notes()
+                    p = subprocess.Popen((config_options['editor'], self.notes_location))
+                    p.wait()
+                    self.clean_notes_file()
+                    new_notes_count = self.count_notes()
+                    changed_notes_count = initial_notes_count - new_notes_count
+                    if changed_notes_count > 0:
+                        print 'Deleted {} notes successfully.'.format(changed_notes_count)
+                else:
+                    print 'Default editor not set! Set default editor in mimir config ({}).'.format(self.config_location)
+
+    def _status(self, **Kwargs):
+        """
+        Return the status information on the current mimir
+        :param Kwargs:
+        :return:
+        """
+        if self.does_mimir_exist():
+            with open(self.notes_location, 'r') as f:
+                status_line = f.readline()
+                date_init = status_line.split("::")[0]
+                print 'Mimir intialized on {}'.format(date_init)
+            print 'Entries count: {}'.format(self.count_notes())
+
 
     def does_mimir_exist(self):
         """
@@ -135,9 +168,64 @@ class MimirHandler:
                 .format(self.working_dir)
             return False
 
+    def count_notes(self):
+        """
+        Counts the total of all notes in the current mimir
+        :return: int The count of all notes in the current mimir
+        """
+        if self.does_mimir_exist():
+            with open(self.notes_location, 'r') as f:
+                index = 0
+                count = 0
+                for line in f:
+                    # Skip the first two lines of the file, they merely record when the mimir was created
+                    if index == 0 or index == 1:
+                        index += 1
+                        continue
+
+                    if line != '\n':
+                        count += 1
+                    index += 1
+
+            return count
+
+    def clean_notes_file(self):
+        """
+        Cleans up the notes file after editing (removes extra whitespace, primarily)
+        :return:
+        """
+
+        if self.does_mimir_exist():
+            # Open the notes files, and read in all the lines, we'll use these later to recreate the file with extra
+            # blank lines deleted
+            with open(self.notes_location, 'r') as f:
+                lines = f.readlines()
+
+            # Now, read through each line (Except the first two), check the line above it to see if its a newline.
+            # If the line above is a new line, and the current line is a new line, delete, as it is an extra new line=
+            with open(self.notes_location, 'w') as f:
+                previous_line = ''
+                index = 0
+                for line in lines:
+                    # Skip the first two lines of the file, they merely record when the mimir was created
+                    if index == 0 or index == 1:
+                        f.write(line)
+                        previous_line = line
+                        index += 1
+                        continue
+
+                    if previous_line == '\n' and line == '\n':
+                        print 'Found incorrect whitespace...correcting'
+                    else:
+                        f.write(line)
+
+                    previous_line = line
+                    index += 1
+
     @staticmethod
     def handler_not_found():
         print 'Handler not found!'
+
 
 
 

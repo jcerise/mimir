@@ -8,12 +8,14 @@ class Actions(Enum):
     init = 1
     delete = 2
     new = 3
+    status = 4
+    edit = 5
 
 
 @click.command()
 @click.argument('action', nargs=-1)
-@click.option('-s', nargs=1, type=int, default=100)
-def cli(s, action=None):
+@click.option('-s', nargs=1, type=int)
+def cli(s=None, action=None):
     actions = Actions
     handler = MimirHandler()
 
