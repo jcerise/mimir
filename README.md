@@ -30,8 +30,8 @@ The note will be added to `.mimir/mimir_notes.txt`
 
 To show notes:
 ```bash
-mimir -s 2
 mimir -s 1
+mimir -s 2
 ```
 Will show the last one and two notes, respectively.
 
