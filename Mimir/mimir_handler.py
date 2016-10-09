@@ -6,8 +6,6 @@ import shutil
 import datetime
 import subprocess
 
-from subprocess import call
-
 
 class MimirHandler:
 
@@ -34,7 +32,6 @@ class MimirHandler:
         Initialize a new mimir, creating a .mimir directory, an initial configuration file, and a notes file
         :return:
         """
-
         print 'Initializing mimir in {}...'.format(self.working_dir)
         try:
             if not os.path.exists(self.mimir_dir):
@@ -48,7 +45,7 @@ class MimirHandler:
                 # If the above directory creation succeeded, attempt to create the base configuration file
                 # (.mimir/.mimir_config)
                 with open(self.config_location, 'w+') as f:
-                    json.dump(config, f)
+                    json.dump(config, f, indent=4)
 
                 # Finally, create the actual notes file
                 with open(self.notes_location, 'w+') as f:
@@ -67,7 +64,6 @@ class MimirHandler:
         Delete any found mimirs in the given directory.
         :return:
         """
-
         try:
             if os.path.exists(self.mimir_dir):
                 print 'Deleting mimir at {}'.format(self.mimir_dir)
@@ -96,6 +92,7 @@ class MimirHandler:
                 current_time = datetime.datetime.now()
                 f.write('{:%Y-%m-%d %H:%M} :: {}'.format(current_time, note))
 
+            self.clean_notes_file()
             print '[Entry added to mimir at {}]'.format(self.mimir_dir)
 
     def _show(self, **kwargs):
@@ -126,19 +123,46 @@ class MimirHandler:
                     print str(note)
 
     def _edit(self, **kwargs):
+        """
+        Allows editing the mimir_notes.txt file, where all notes are stored. If a line is changed or deleted, the
+        user is notified of this upon closing/saving the file.
+        :param kwargs:
+        :return:
+        """
         if self.does_mimir_exist():
             with open(self.config_location) as config:
                 config_options = json.load(config)
                 if config_options['editor'] != '':
                     print 'Opening {} in {}'.format(self.notes_location, config_options['editor'])
+
+                    with open(self.notes_location, 'r') as f:
+                        original_lines = f.readlines()
                     initial_notes_count = self.count_notes()
                     p = subprocess.Popen((config_options['editor'], self.notes_location))
                     p.wait()
+
+                    # Clean up any whitespace left over from deleting/editing notes
                     self.clean_notes_file()
+
+                    # Calculate which notes (if any) were edited, by check each line of the original file with the
+                    # changed file for similarity.
+                    with open(self.notes_location, 'r') as f:
+                        new_lines = f.readlines()
+                    same = set(original_lines).intersection(new_lines)
+                    # Toss out new lines, those will always be the same
+                    same.discard('\n')
+
                     new_notes_count = self.count_notes()
-                    changed_notes_count = initial_notes_count - new_notes_count
-                    if changed_notes_count > 0:
-                        print 'Deleted {} notes successfully.'.format(changed_notes_count)
+                    deleted_notes_count = initial_notes_count - new_notes_count
+
+                    # Calculate the edited notes count. We need to subract one from the length here, to account for the
+                    # header note that is always present (but not technically a note).
+                    edited_notes_count = new_notes_count - (len(same) - 1)
+
+                    if edited_notes_count > 0:
+                        print 'Edited {} notes successfully.'.format(edited_notes_count)
+                    if deleted_notes_count > 0:
+                        print 'Deleted {} notes successfully.'.format(deleted_notes_count)
                 else:
                     print 'Default editor not set! Set default editor in mimir config ({}).'.format(self.config_location)
 
@@ -158,7 +182,7 @@ class MimirHandler:
 
     def does_mimir_exist(self):
         """
-        Check for the existance of a mimir, mimir config, and notes file
+        Check for the existence of a mimir, mimir config, and notes file
         :return:
         """
         if os.path.exists(self.mimir_dir) and os.path.exists(self.notes_location) and os.path.exists(self.config_location):
@@ -166,6 +190,7 @@ class MimirHandler:
         else:
             print 'No mimir found, or files missing...are you sure you are in the correct dir? ({})'\
                 .format(self.working_dir)
+            print 'To create a new mimir, run `mimir init`'
             return False
 
     def count_notes(self):
@@ -194,7 +219,6 @@ class MimirHandler:
         Cleans up the notes file after editing (removes extra whitespace, primarily)
         :return:
         """
-
         if self.does_mimir_exist():
             # Open the notes files, and read in all the lines, we'll use these later to recreate the file with extra
             # blank lines deleted
@@ -215,7 +239,7 @@ class MimirHandler:
                         continue
 
                     if previous_line == '\n' and line == '\n':
-                        print 'Found incorrect whitespace...correcting'
+                        pass
                     else:
                         f.write(line)
 

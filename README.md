@@ -28,6 +28,19 @@ mimir This is my brand new note!
 
 The note will be added to `.mimir/mimir_notes.txt`
 
+To show notes:
+```bash
+mimir -s 2
+mimir -s 1
+```
+Will show the last one and two notes, respectively.
+
+To edit notes:
+```bash
+mimir edit
+```
+This will open the mimir notes file in your specified editor (this must be set in .mimir-config)
+
 ## Installation
 
 Once working code exists, you will be able to install Mimir via pip
