@@ -20,7 +20,7 @@ def cli(s=None, action=None):
     handler = MimirHandler()
 
     # Check if the 'show' option was provided. If so, show that many notes, and return
-    if s is not None and s > 0:
+    if s is not None and s >= 0:
         handler.handle('show', num=s)
         return
 
@@ -44,7 +44,10 @@ def cli(s=None, action=None):
         handler.handle('new', note=action)
     else:
         # If we made it here, then mimir is confused as to how to handle the users input. Alert them to this.
-        invalid_action()
+        if len(action) is 0 and s is None:
+            handler.handle('editor_new')
+        else:
+            invalid_action()
 
 
 def invalid_action():
