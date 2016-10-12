@@ -1,7 +1,7 @@
 import click
 from enum import Enum
 
-from Mimir.mimir_handler import MimirHandler
+from MimirNotes.mimir_handler import MimirHandler
 
 
 class Actions(Enum):

@@ -3,8 +3,8 @@ import os
 import shutil
 from mock import patch
 
-from Mimir.mimir import Actions
-from Mimir.mimir_handler import MimirHandler
+from MimirNotes.mimir import Actions
+from MimirNotes.mimir_handler import MimirHandler
 
 
 class TestHandler:

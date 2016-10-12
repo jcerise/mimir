@@ -53,7 +53,7 @@ class MimirHandler:
                 # Finally, create the actual notes file
                 with open(self.notes_location, 'w+') as f:
                     current_time = datetime.datetime.now()
-                    f.write('{:%Y-%m-%d %H:%M} :: Mimir initialized.'.format(current_time))
+                    f.write('{:%Y-%m-%d %H:%M} :: MimirNotes initialized.'.format(current_time))
 
                 print 'Successfully created a new mimir at {}'.format(self.mimir_dir)
             else:
@@ -169,8 +169,9 @@ class MimirHandler:
 
                 with open(self.notes_location, 'r') as f:
                     original_lines = f.readlines()
+
                 initial_notes_count = self.count_notes()
-                p = subprocess.Popen((config_options['editor'], self.notes_location))
+                p = subprocess.Popen((config_options['editor'   ], self.notes_location))
                 p.wait()
 
                 # Clean up any whitespace left over from deleting/editing notes
@@ -212,7 +213,7 @@ class MimirHandler:
             with open(self.notes_location, 'r') as f:
                 status_line = f.readline()
                 date_init = status_line.split("::")[0]
-                print 'Mimir intialized on {}'.format(date_init)
+                print 'MimirNotes intialized on {}'.format(date_init)
             print 'Entries count: {}'.format(self.count_notes())
 
     def does_mimir_exist(self):

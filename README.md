@@ -43,7 +43,10 @@ This will open the mimir notes file in your specified editor (this must be set i
 
 ## Installation
 
-Once working code exists, you will be able to install Mimir via pip
+Install via pip:
+```bash
+pip install mimirnotes
+```
 
 ## Tests
 
