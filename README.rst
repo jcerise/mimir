@@ -30,6 +30,11 @@ To view your mimir notes::
 
 Where s is the number of notes you wish to view.
 
+To view your notes by tag::
+
+    mimir @tag1 @tag2
+If only tags are provided, mimir assumes you want to search by those tags.
+
 You can also edit your notes::
 
     mimir edit

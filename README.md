@@ -26,6 +26,11 @@ To create a new note, simply:
 mimir This is my brand new note!
 ```
 
+Or, to add a new note with tags:
+```bash
+mimir This is a note with a @tag
+```
+
 The note will be added to `.mimir/mimir_notes.txt`
 
 To show notes:
@@ -34,6 +39,12 @@ mimir -s 1
 mimir -s 2
 ```
 Will show the last one and two notes, respectively.
+
+```bash
+mimir @tag1
+mimir @tag1 @tag2
+```
+If only tags are provided to mimir, it will assume you want to search by tags, rather than create a new note
 
 To edit notes:
 ```bash
