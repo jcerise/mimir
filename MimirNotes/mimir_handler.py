@@ -105,13 +105,11 @@ class MimirHandler:
         :return:
         """
         if self.does_mimir_exist():
-            with open(self.config_location) as config:
-                config_options = json.load(config)
 
-            if config_options['editor'] != '':
+            if self.get_config('editor') != '':
                 temp_note = tempfile.NamedTemporaryFile(delete=False, suffix='.txt', dir=self.tmp_note_location)
                 print temp_note.name
-                p = subprocess.Popen((config_options['editor'], temp_note.name))
+                p = subprocess.Popen((self.get_config('editor'), temp_note.name))
                 p.wait()
 
                 with open(temp_note.name) as f:
@@ -130,28 +128,12 @@ class MimirHandler:
         :return:
         """
         if self.does_mimir_exist():
-            amount_to_return = kwargs['num']
-            with open(self.notes_location, 'r') as f:
-                index = 0
-                count = 0
-                returned_notes = []
-                for line in f:
-                    # Skip the first two lines of the file, they merely record when the mimir was created
-                    if index == 0 or index == 1:
-                        index += 1
-                        continue
+            amount_to_return = kwargs.get('num', 0)
+            tags = kwargs.get('tags')
+            returned_notes = self.notes_to_array(notes_count=amount_to_return, tags=tags)
 
-                    if line != '\n':
-                        returned_notes.append(line.rstrip())
-                    else:
-                        count += 1
-
-                        if count >= amount_to_return and amount_to_return is not 0:
-                            break
-                    index += 1
-
-                for note in returned_notes:
-                    print str(note)
+            for note in returned_notes:
+                print str(note)
 
     def _edit(self, **kwargs):
         """
@@ -161,17 +143,15 @@ class MimirHandler:
         :return:
         """
         if self.does_mimir_exist():
-            with open(self.config_location) as config:
-                config_options = json.load(config)
 
-            if config_options['editor'] != '':
-                print '[Opening {} in {}]'.format(self.notes_location, config_options['editor'])
+            if self.get_config('editor') != '':
+                print '[Opening {} in {}]'.format(self.notes_location, self.get_config('editor'))
 
                 with open(self.notes_location, 'r') as f:
                     original_lines = f.readlines()
 
                 initial_notes_count = self.count_notes()
-                p = subprocess.Popen((config_options['editor'   ], self.notes_location))
+                p = subprocess.Popen((self.get_config('editor'), self.notes_location))
                 p.wait()
 
                 # Clean up any whitespace left over from deleting/editing notes
@@ -281,6 +261,59 @@ class MimirHandler:
 
                     previous_line = line
                     index += 1
+
+    def notes_to_array(self, notes_count=0, tags=None, from_date=None):
+        """
+        Takes in several filter criteria, and returns a list of entries to display back to the user
+        :param notes_count: The number of notes to return
+        :param tags: Tags to filter notes by
+        :param from_date: [Not implented yet]
+        :return: A list of str containing the filtered notes
+        """
+        with open(self.notes_location, 'r') as f:
+            index = 0
+            count = 0
+            returned_notes = []
+            for line in f:
+                # Skip the first two lines of the file, they merely record when the mimir was created
+                if index == 0 or index == 1:
+                    index += 1
+                    continue
+
+                if line != '\n':
+                    if tags:
+                        # We're searching on tags. If the type of tag is unicode (a single tag, as tuples with one
+                        # one element in python are just the element), search on that unicode string, otherwise, iterate
+                        # each supplied tag, and search for it
+                        line = line.rstrip()
+                        search_list = line.split(' ')
+                        if isinstance(tags, unicode):
+                            if tags in search_list:
+                                returned_notes.append(line.rstrip())
+                        else:
+                            for tag in tags:
+                                if tag in search_list:
+                                    returned_notes.append(line.rstrip())
+                                    break
+                    else:
+                        returned_notes.append(line.rstrip())
+                else:
+                    count += 1
+
+                    if count >= notes_count and notes_count is not 0:
+                        break
+                index += 1
+
+        if len(returned_notes) == 0:
+            returned_notes.append('[No notes found for search criteria!]')
+
+        return returned_notes
+
+    def get_config(self, option=''):
+        with open(self.config_location) as config:
+            config_options = json.load(config)
+
+        return config_options[option]
 
     def editor_not_set(self):
         print '[Default editor not set! Set default editor in mimir config ({}).]'.format(self.config_location)

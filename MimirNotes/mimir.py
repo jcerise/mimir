@@ -36,12 +36,27 @@ def cli(s=None, action=None):
             else:
                 raise KeyError('Action not defined!')
         except KeyError as ex:
-            # Assume here that user wants a one word note, and record it
-            handler.handle('new', note=action)
+            # Check if the single term starts with a tag symbol. If so, assume a tag search on a single term
+            if action[0] == handler.get_config('tag_symbol'):
+                handler.handle('show', tags=action)
+            else:
+                # Assume here that user wants a one word note, and record it
+                handler.handle('new', note=action)
     elif len(action) > 0:
         # If multiple arguments were passed in, but no specific actions were called, assume no specific action,
         # and create a note instead.
-        handler.handle('new', note=action)
+        # Before we go any further, check each entered term for the tag symbol. If every term is preceeded by the tag
+        # symbol, assume the user is searching for tags, not entering a new note.
+        tag_search = False
+        for term in action:
+            if term[0] == handler.get_config('tag_symbol'):
+                tag_search = True
+            else:
+                tag_search = False
+        if tag_search:
+            handler.handle('show', tags=action)
+        else:
+            handler.handle('new', note=action)
     else:
         # If we made it here, then mimir is confused as to how to handle the users input. Alert them to this.
         if len(action) is 0 and s is None:
