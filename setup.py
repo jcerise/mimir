@@ -6,7 +6,7 @@ def readme():
         return f.read()
 
 setup(name='MimirNotes',
-      version='0.2.7',
+      version='0.3.1',
       description='A simple, command line, note taking utility.',
       keywords='note terminal command-line journal',
       url='https://github.com/jcerise/mimir',
