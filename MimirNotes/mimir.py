@@ -47,12 +47,14 @@ def cli(s=None, action=None):
         # and create a note instead.
         # Before we go any further, check each entered term for the tag symbol. If every term is preceeded by the tag
         # symbol, assume the user is searching for tags, not entering a new note.
-        tag_search = False
+        tag_array = []
         for term in action:
             if term[0] == handler.get_config('tag_symbol'):
-                tag_search = True
+                tag_array.append(True)
             else:
-                tag_search = False
+                tag_array.append(False)
+
+        tag_search = all(item == True for item in tag_array)
         if tag_search:
             handler.handle('show', tags=action)
         else:

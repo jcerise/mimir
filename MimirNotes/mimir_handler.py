@@ -124,7 +124,7 @@ class MimirHandler:
 
     def _show(self, **kwargs):
         """
-        Show the last n notes, where n is the value passed in from the -s flag
+        Show notes, based on the input criteria. This can be a number (using the -s flag), tags, or a date
         :return:
         """
         if self.does_mimir_exist():
@@ -215,20 +215,7 @@ class MimirHandler:
         :return: int The count of all notes in the current mimir
         """
         if self.does_mimir_exist():
-            with open(self.notes_location, 'r') as f:
-                index = 0
-                count = 0
-                for line in f:
-                    # Skip the first two lines of the file, they merely record when the mimir was created
-                    if index == 0 or index == 1:
-                        index += 1
-                        continue
-
-                    if line != '\n':
-                        count += 1
-                    index += 1
-
-            return count
+            return len(self.notes_to_array())
 
     def clean_notes_file(self):
         """
