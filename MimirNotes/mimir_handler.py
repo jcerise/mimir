@@ -7,6 +7,8 @@ import datetime
 import subprocess
 import tempfile
 
+import dateparser
+
 
 class MimirHandler:
 
@@ -130,7 +132,9 @@ class MimirHandler:
         if self.does_mimir_exist():
             amount_to_return = kwargs.get('num', 0)
             tags = kwargs.get('tags')
-            returned_notes = self.notes_to_array(notes_count=amount_to_return, tags=tags)
+            since = kwargs.get('since', None)
+            until = kwargs.get('until', None)
+            returned_notes = self.notes_to_array(notes_count=amount_to_return, tags=tags, since=since, until=until)
 
             for note in returned_notes:
                 print str(note)
@@ -249,18 +253,29 @@ class MimirHandler:
                     previous_line = line
                     index += 1
 
-    def notes_to_array(self, notes_count=0, tags=None, from_date=None):
+    def notes_to_array(self, notes_count=0, tags=None, since=None, until=None):
         """
         Takes in several filter criteria, and returns a list of entries to display back to the user
         :param notes_count: The number of notes to return
         :param tags: Tags to filter notes by
-        :param from_date: [Not implented yet]
+        :param since: A date like string to search forward from
+        :param until: A date like string to search backwards from
         :return: A list of str containing the filtered notes
         """
+
+        # First up, grab and parse any since or until dates passed in. These need to be converted to datetimes
+        if since:
+            since = dateparser.parse(since)
+
+        if until:
+            until = dateparser.parse(until)
+
         with open(self.notes_location, 'r') as f:
             index = 0
             count = 0
             returned_notes = []
+            line_list = []
+
             for line in f:
                 # Skip the first two lines of the file, they merely record when the mimir was created
                 if index == 0 or index == 1:
@@ -268,29 +283,49 @@ class MimirHandler:
                     continue
 
                 if line != '\n':
-                    if tags:
-                        # We're searching on tags. If the type of tag is unicode (a single tag, as tuples with one
-                        # one element in python are just the element), search on that unicode string, otherwise, iterate
-                        # each supplied tag, and search for it
-                        line = line.rstrip()
-                        search_list = line.split(' ')
-                        if isinstance(tags, unicode):
-                            if tags in search_list:
-                                returned_notes.append(line.rstrip())
-                        else:
-                            for tag in tags:
-                                if tag in search_list:
-                                    returned_notes.append(line.rstrip())
-                                    break
-                    else:
-                        returned_notes.append(line.rstrip())
-                else:
-                    count += 1
+                    line_list.append(line)
 
-                    if count >= notes_count and notes_count is not 0:
-                        break
                 index += 1
 
+        # Sort the list of notes (by date)
+        line_list.sort(reverse=True)
+
+        # Now, work through the list of notes, filtering by date if valid, and tags as well (these can be combined)
+        for line in line_list:
+            line_components = line.split('::')
+            date_created = dateparser.parse(line_components[0])
+
+            # If since or until dates were provided, filter out lines based on those criteria
+            if since:
+                if since > date_created:
+                    continue
+
+            if until:
+                if until < date_created:
+                    continue
+
+            if tags:
+                # We're searching on tags. If the type of tag is unicode (a single tag, as tuples with one
+                # one element in python are just the element), search on that unicode string, otherwise, iterate
+                # each supplied tag, and search for it
+                line = line.rstrip()
+                search_list = line.split(' ')
+                if isinstance(tags, unicode):
+                    if tags in search_list:
+                        returned_notes.append(line.rstrip())
+                else:
+                    for tag in tags:
+                        if tag in search_list:
+                            returned_notes.append(line.rstrip())
+                            break
+            else:
+                returned_notes.append(line.rstrip())
+
+        # Finally, if a count to return was provided (-s), limit the returned result set to the number provided
+        if notes_count > 0:
+            returned_notes = returned_notes[:notes_count]
+
+        # No notes were found, notify the user
         if len(returned_notes) == 0:
             returned_notes.append('[No notes found for search criteria!]')
 
