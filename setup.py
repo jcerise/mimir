@@ -6,7 +6,7 @@ def readme():
         return f.read()
 
 setup(name='MimirNotes',
-      version='0.4.0',
+      version='0.4.1',
       description='A simple, command line, note taking utility.',
       keywords='note terminal command-line journal',
       url='https://github.com/jcerise/mimir',
@@ -15,7 +15,7 @@ setup(name='MimirNotes',
       packages=['MimirNotes'],
       include_package_data=True,
       zip_safe=False,
-      install_requires=['click', 'enum34'],
+      install_requires=['click', 'enum34', 'dateparser'],
       entry_points='''
             [console_scripts]
             mimir=MimirNotes.mimir:cli
