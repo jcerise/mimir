@@ -136,8 +136,12 @@ class MimirHandler:
             until = kwargs.get('until', None)
             returned_notes = self.notes_to_array(notes_count=amount_to_return, tags=tags, since=since, until=until)
 
-            for note in returned_notes:
-                print str(note)
+            if len(returned_notes):
+                for note in returned_notes:
+                    print str(note)
+            else:
+                print '[No notes found for search criteria!]'
+
 
     def _edit(self, **kwargs):
         """
@@ -272,7 +276,6 @@ class MimirHandler:
 
         with open(self.notes_location, 'r') as f:
             index = 0
-            count = 0
             returned_notes = []
             line_list = []
 
@@ -324,10 +327,6 @@ class MimirHandler:
         # Finally, if a count to return was provided (-s), limit the returned result set to the number provided
         if notes_count > 0:
             returned_notes = returned_notes[:notes_count]
-
-        # No notes were found, notify the user
-        if len(returned_notes) == 0:
-            returned_notes.append('[No notes found for search criteria!]')
 
         return returned_notes
 
