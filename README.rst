@@ -36,6 +36,14 @@ To view your notes by tag::
 
 If only tags are provided, mimir assumes you want to search by those tags.
 
+Notes can also be searched via date fences::
+
+    mimir --since 2010 --until october
+    mimir --since june
+    mimir --until 2015
+
+Date fences can be mixed with tags and the -s option for more fine grained searching.
+
 You can also edit your notes::
 
     mimir edit

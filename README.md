@@ -46,6 +46,14 @@ mimir @tag1 @tag2
 ```
 If only tags are provided to mimir, it will assume you want to search by tags, rather than create a new note
 
+Notes can also be searched via date fences:
+```bash
+mimir --since 2010 --until october
+mimir --since june
+mimir --until 2015
+```
+Date fences can be mixed with tags and the -s option for more fine grained searching.
+
 To edit notes:
 ```bash
 mimir edit
