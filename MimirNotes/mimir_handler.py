@@ -110,7 +110,6 @@ class MimirHandler:
 
             if self.get_config('editor') != '':
                 temp_note = tempfile.NamedTemporaryFile(delete=False, suffix='.txt', dir=self.tmp_note_location)
-                print temp_note.name
                 p = subprocess.Popen((self.get_config('editor'), temp_note.name))
                 p.wait()
 
