@@ -60,6 +60,13 @@ mimir edit
 ```
 This will open the mimir notes file in your specified editor (this must be set in .mimir-config)
 
+Finally, you can also view the status of your mimir, view a count of all tags present, or delete it entirely:
+```bash
+mimir status
+mimir tags
+mimir delete
+```
+
 ## Installation
 
 Install via pip:

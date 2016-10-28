@@ -1,13 +1,16 @@
 from setuptools import setup
 
-
-def readme():
-    with open('README.rst') as f:
-        return f.read()
+long_description = ''
+try:
+    import pypandoc
+    long_description = pypandoc.convert('README.md', 'rst')
+except (IOError, ImportError):
+    long_description = open('README.md').read()
 
 setup(name='MimirNotes',
-      version='0.4.5',
+      version='0.4.7',
       description='A simple, command line, note taking utility.',
+      long_description=long_description,
       keywords='note terminal command-line journal',
       url='https://github.com/jcerise/mimir',
       author='Jeremy Cerise',
