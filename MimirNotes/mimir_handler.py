@@ -1,3 +1,4 @@
+import collections
 import json
 import os
 
@@ -8,6 +9,7 @@ import subprocess
 import tempfile
 
 import dateparser
+import operator
 
 
 class MimirHandler:
@@ -203,6 +205,23 @@ class MimirHandler:
                 print 'MimirNotes intialized on {}'.format(date_init)
             print 'Entries count: {}'.format(self.count_notes())
 
+    def _tags(self, **kwargs):
+        """
+        Return a formatted list of all tags found in the current Mimir, with a count of each occurance
+        :param kwargs:
+        :return:
+        """
+        if self.does_mimir_exist():
+            tags = self.find_tags()
+            tags = sorted(tags.items(), key=operator.itemgetter(1), reverse=True)
+            print tags
+            if len(tags):
+                for tag in tags:
+                    print '{}: {}'.format(tag[0], tag[1])
+            else:
+                print '[No tags found in notes]'
+
+
     def does_mimir_exist(self):
         """
         Check for the existence of a mimir, mimir config, and notes file
@@ -328,6 +347,21 @@ class MimirHandler:
             returned_notes = returned_notes[:notes_count]
 
         return returned_notes
+
+    def find_tags(self):
+        notes = self.notes_to_array()
+        tags = []
+        tag_symbol = self.get_config('tag_symbol')
+
+        for note in notes:
+            line_components = note.split('::')
+            note_text = line_components[1]
+            tags.extend([word for word in note_text.split() if word.startswith(tag_symbol)])
+
+        tag_count = collections.Counter(tags)
+        return tag_count
+
+
 
     def get_config(self, option=''):
         with open(self.config_location) as config:

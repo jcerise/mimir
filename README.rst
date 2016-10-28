@@ -51,7 +51,8 @@ You can also edit your notes::
 (To edit notes, you will need to set the `editor` config variable in .mimir/.mimir_config, mimir will warn you if this is
 not set)
 
-Finally, you can also view the status of your mimir, or delete it entirely::
+Finally, you can also view the status of your mimir, view a count of all tags present, or delete it entirely::
 
     mimir status
+    mimir tags
     mimir delete

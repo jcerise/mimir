@@ -10,6 +10,7 @@ class Actions(Enum):
     new = 3
     status = 4
     edit = 5
+    tags = 6
 
 
 @click.command()
@@ -17,9 +18,14 @@ class Actions(Enum):
 @click.option('-s', nargs=1, type=int)
 @click.option('--since')
 @click.option('--until')
-def cli(s=None, action=None, since=None, until=None):
+def cli(s=None, action=None, since=None, until=None, tags=False):
     actions = Actions
     handler = MimirHandler()
+
+    #Check for the presence of the tags option. If present, print out the tags in then current mimir, and exit
+    if tags:
+        handler.handle('tags')
+        return
 
     # Check if the 'show' option was provided. If so, show that many notes, and return
     if s is not None and s >= 0:
