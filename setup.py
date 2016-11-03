@@ -8,7 +8,7 @@ with open(path.join(here, 'README.rst')) as f:
     long_description = f.read()
 
 setup(name='MimirNotes',
-      version='0.4.9',
+      version='0.5.0',
       description='A simple, command line, note taking utility.',
       long_description=long_description,
       keywords='note terminal command-line journal',

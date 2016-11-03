@@ -214,7 +214,7 @@ class MimirHandler:
         if self.does_mimir_exist():
             tags = self.find_tags()
             tags = sorted(tags.items(), key=operator.itemgetter(1), reverse=True)
-            print tags
+            print '[{} unique tags found]'.format(len(tags))
             if len(tags):
                 for tag in tags:
                     print '{}: {}'.format(tag[0], tag[1])
