@@ -122,7 +122,7 @@ class EvernoteHandler(object):
             client = EvernoteClient(
                 consumer_key=consumer_key,
                 consumer_secret=consumer_secret,
-                sandbox=True
+                sandbox=False
             )
 
             request_token = client.get_request_token('http://localhost')

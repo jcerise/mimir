@@ -60,6 +60,13 @@ mimir edit
 ```
 This will open the mimir notes file in your specified editor (this must be set in .mimir-config)
 
+All notes in your Mimir notes file can be synced to an Evernote account. This requires an evernote account, as well as api keys.
+Instuctions to acquire these are provided in the app:
+```bash
+mimir sync -- syncs your notes file with the Evernote folder specified in your config file (MimirNotes by default)
+mimir generate_evernote_token -- Walks you through creating an access token for syncing
+```
+
 Finally, you can also view the status of your mimir, view a count of all tags present, or delete it entirely:
 ```bash
 mimir status
