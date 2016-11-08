@@ -11,6 +11,8 @@ class Actions(Enum):
     status = 4
     edit = 5
     tags = 6
+    sync = 7
+    generate_evernote_token = 8
 
 
 @click.command()

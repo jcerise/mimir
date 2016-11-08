@@ -11,6 +11,14 @@ import tempfile
 import dateparser
 import operator
 
+from evernote.api.client import EvernoteClient
+from evernote.edam.error.ttypes import EDAMUserException
+from evernote.edam.notestore import NoteStore
+from evernote.edam.notestore.ttypes import NoteFilter
+from evernote.edam.type import ttypes as Types
+
+from MimirNotes.evernote_handler import EvernoteHandler
+
 
 class MimirHandler:
 
@@ -47,7 +55,15 @@ class MimirHandler:
 
                 # Setup the base configuration dictionary. This will be written to the config file as json. The user
                 # will have control over editing these settings.
-                config = {"editor":"", "tag_symbol": "@", "encrypt":False}
+                config = {
+                    "editor":"",
+                    "tag_symbol": "@",
+                    "encrypt":False,
+                    "evernote_notebook_name":"MimirNotes",
+                    "evernote_auth_token":"",
+                    "evernote_public_key":"",
+                    "evernote_secret_key":""
+                }
 
                 # If the above directory creation succeeded, attempt to create the base configuration file
                 # (.mimir/.mimir_config)
@@ -143,7 +159,6 @@ class MimirHandler:
             else:
                 print '[No notes found for search criteria!]'
 
-
     def _edit(self, **kwargs):
         """
         Allows editing the mimir_notes.txt file, where all notes are stored. If a line is changed or deleted, the
@@ -221,6 +236,28 @@ class MimirHandler:
             else:
                 print '[No tags found in notes]'
 
+    def _sync(self, **kwargs):
+        # Authenticate the user, using OAuth, to the Evernote service
+        auth_token = self.get_config('evernote_auth_token')
+        if auth_token:
+            print "Got auth toke: {}".format(auth_token)
+            evernote_handler = EvernoteHandler()
+            evernote_handler.connect_to_evernote(auth_token=auth_token)
+            notes = self.notes_to_array()
+            notebook_name = self.get_config("evernote_notebook_name")
+            evernote_handler.upload_to_notebook(notebook_name=notebook_name, notes_data=notes)
+        else:
+            print "[You have not provided an auth token for Evernote yet. Run 'mimir generate_evernote_token' to create one]"
+
+    def _generate_evernote_token(self, **kwargs):
+        evernote_public_key = self.get_config('evernote_public_key')
+        evernote_secret_key = self.get_config('evernote_secret_key')
+
+        if evernote_public_key and evernote_secret_key:
+            evernote_handler = EvernoteHandler()
+            evernote_handler.oauth(consumer_key=evernote_public_key, consumer_secret=evernote_secret_key)
+        else:
+            print "[You need to provide a public and secret key in your config file before generating an auth token for Evernote.]"
 
     def does_mimir_exist(self):
         """
@@ -360,8 +397,6 @@ class MimirHandler:
 
         tag_count = collections.Counter(tags)
         return tag_count
-
-
 
     def get_config(self, option=''):
         with open(self.config_location) as config:

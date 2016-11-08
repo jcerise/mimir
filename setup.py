@@ -8,7 +8,7 @@ with open(path.join(here, 'README.rst')) as f:
     long_description = f.read()
 
 setup(name='MimirNotes',
-      version='0.5.0',
+      version='0.6.0',
       description='A simple, command line, note taking utility.',
       long_description=long_description,
       keywords='note terminal command-line journal',
@@ -18,7 +18,7 @@ setup(name='MimirNotes',
       packages=['MimirNotes'],
       include_package_data=True,
       zip_safe=False,
-      install_requires=['click', 'enum34', 'dateparser'],
+      install_requires=['click', 'enum34', 'dateparser', 'evernote'],
       entry_points='''
             [console_scripts]
             mimir=MimirNotes.mimir:cli
