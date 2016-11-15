@@ -17,7 +17,8 @@ class EvernoteHandler(object):
         self.token = auth_token
 
         try:
-            self.client = EvernoteClient(token=auth_token)
+            self.client = EvernoteClient(token=auth_token,
+                                         sandbox=False)
             self.user_store = self.client.get_user_store()
             user = self.user_store.getUser()
         except (EDAMUserException, EDAMSystemException) as ex:
@@ -144,7 +145,8 @@ class EvernoteHandler(object):
 
             print auth_token
 
-            client = EvernoteClient(token=auth_token)
+            client = EvernoteClient(token=auth_token,
+                                    sandbox=False)
 
             # Test the new auth token to ensure it works
             user_store = client.get_user_store()
