@@ -10,7 +10,6 @@ class EvernoteHandler(object):
     def __init__(self):
         self.client = None
         self.token = None
-        pass
 
     def connect_to_evernote(self, auth_token):
         user = None
@@ -144,8 +143,6 @@ class EvernoteHandler(object):
                 vals['oauth_verifier']
             )
 
-            print auth_token
-
             client = EvernoteClient(token=auth_token,
                                     sandbox=False)
 
@@ -153,8 +150,9 @@ class EvernoteHandler(object):
             user_store = client.get_user_store()
             user = user_store.getUser()
 
-            print "Token successfully generated for user {}".format(user.username)
-            print "Auth token: {}".format(auth_token)
-            print "Paste the above token into .mimir/.mimir-config under the 'evernote_auth_token' setting."
+            print "Tokens successfully generated for user {}".format(user.username)
+            print "Your Evernote auth_token: {}".format(auth_token)
+            print "Your Evernote oauth_token: {}".format(request_token['oauth_token'])
+            print "Paste the above tokens into .mimir/.mimir-config under the 'evernote_auth_token' and evernote_oaith_token settings."
         except Exception as ex:
             print "[Something went wrong trying to generate an auth token! Message: {}]".format(ex)

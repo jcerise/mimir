@@ -46,7 +46,7 @@ class MimirHandler:
         Initialize a new mimir, creating a .mimir directory, an initial configuration file, and a notes file
         :return:
         """
-        print 'Initializing mimir in {}...'.format(self.working_dir)
+        print '[Initializing mimir in {}...]'.format(self.working_dir)
         try:
             if not os.path.exists(self.mimir_dir):
                 # Attempt to make the .mimir directory in the current working directory
@@ -75,12 +75,12 @@ class MimirHandler:
                     current_time = datetime.datetime.now()
                     f.write('{:%Y-%m-%d %H:%M} :: MimirNotes initialized.'.format(current_time))
 
-                print 'Successfully created a new mimir at {}'.format(self.mimir_dir)
+                print '[Successfully created a new mimir at {}]'.format(self.mimir_dir)
             else:
-                print 'A mimir directory already exists at {}! Aborting...'.format(self.mimir_dir)
+                print '[A mimir directory already exists at {}! Aborting...]'.format(self.mimir_dir)
                 return
         except OSError as ex:
-            print 'Something went wrong during initialization...'
+            print '[Something went wrong during initialization...]'
 
     def _delete(self, **kwargs):
         """
@@ -246,7 +246,8 @@ class MimirHandler:
             notebook_name = self.get_config("evernote_notebook_name")
             evernote_handler.upload_to_notebook(notebook_name=notebook_name, notes_data=notes)
         else:
-            print "[You have not provided an auth token for Evernote yet. Run 'mimir generate_evernote_token' to create one]"
+            print "[You have not provided an auth token for Evernote yet. Please visit https://www.evernote.com/api/DeveloperToken.action to generate one. " \
+                  "Once you have created a token, enter it in the 'evernote_auth_token' field in the mimir config file.]"
 
     def _generate_evernote_token(self, **kwargs):
         evernote_public_key = self.get_config('evernote_public_key')
