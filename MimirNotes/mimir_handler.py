@@ -240,7 +240,6 @@ class MimirHandler:
         # Authenticate the user, using OAuth, to the Evernote service
         auth_token = self.get_config('evernote_auth_token')
         if auth_token:
-            print "Got auth toke: {}".format(auth_token)
             evernote_handler = EvernoteHandler()
             evernote_handler.connect_to_evernote(auth_token=auth_token)
             notes = self.notes_to_array()

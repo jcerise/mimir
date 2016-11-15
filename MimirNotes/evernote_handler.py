@@ -17,6 +17,7 @@ class EvernoteHandler(object):
         self.token = auth_token
 
         try:
+            print '[Establishing connection to Evernote...]'
             self.client = EvernoteClient(token=auth_token,
                                          sandbox=False)
             self.user_store = self.client.get_user_store()
